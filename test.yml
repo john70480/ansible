@@ -1,0 +1,79 @@
+- name: say 'ubuntu test'
+  hosts: ubuntu
+  vars:
+    myuser: 'gitlab'
+    mypassword: 'gitlab'
+  # become: yes
+  # vars:
+  #   uusername: 'gitlab'
+  #   upassword: 'gitlab'
+  # become_user: osboxes
+  # become_user: root
+  # hosts: 192.168.61.32
+  # remote_user: osboxes
+  # remote_user: osboxes
+  # sudo: yes
+  # sudo_user: osboxes
+  tasks:
+    - name: 切換gitlab帳號開shell資料夾
+      become: yes
+      become_user: gitlab
+      file:
+        path: ~/shell
+        state: directory
+
+    - name: copy shell  deploy.sh
+      copy:
+        src: ../deploy.sh
+        dest: /home/gitlab/shell/deploy.sh
+        owner: gitlab
+        group: gitlab
+        mode: 0644
+      # ansible.builtin.shell:
+      #   cmd: cd ~
+      #   chdir: shell/
+
+    # - name: Create new user gitlab add docker group
+    #   user:
+    #     name: gitlab
+    #     password: '!QAZ2wsx'
+    #     shell: /bin/bash
+    #     groups: docker
+    #     append: yes
+    #     generate_ssh_key: yes
+    #     ssh_key_file: .ssh/id_rsa
+
+    # - name: change password
+    #   ansible.builtin.user:
+    #     name: '{{ myuser }}'
+    #     state: present
+    #     password: "{{ mypassword | password_hash('sha512') }}"
+    # - name: Creating user "{{ uusername }}" with admin access
+    #   become: yes
+    # user:
+    #   name: ' { { uusername } }'
+    #   password: "{ { upassword | password_hash('sha512') } }"
+    #   groups: docker append=yes
+
+    # - name: Ansible Update Cache and Upgrade all Packages
+    #   become: yes
+    #   become_method: sudo
+    #   # become_user: root
+    #   register: updatesys
+    #   apt:
+    #     name: '*'
+    #     state: latest
+    #     update_cache: yes
+
+    # - name: Update apt-get repo and cache
+    #     apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+    # - name: update apt
+    #   command: sudo apt-get update
+
+    # - name: echo 'hello world'
+    #   command: echo 'hello world'
+    # register: result
+
+    # - name: print stdout
+    #   debug:
+    #     msg: '{{ result.stdout }}'

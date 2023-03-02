@@ -1,0 +1,72 @@
+- name: installDock
+  hosts: ubuntu
+  become: yes
+  vars:
+    myuser: 'gitlab'
+    mypassword: 'gitlab'
+
+  tasks:
+    # - name: Install aptitude
+    #   apt:
+    #     name: aptitude
+    #     state: latest
+    #     update_cache: true
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu jammy stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+    - name: docker 開機自動啟動
+      ansible.builtin.systemd:
+        state: started
+        enabled: yes
+        name: docker
+    - name: Create new user gitlab add docker group
+      user:
+        name: gitlab
+        shell: /bin/bash
+        groups: docker
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_file: .ssh/id_rsa
+
+    - name: change gitlab password
+      ansible.builtin.user:
+        name: '{{ myuser }}'
+        state: present
+        password: "{{ mypassword | password_hash('sha512') }}"
+
+    - name: This command will change the working directory to somedir/
+      become: yes
+      become_user: gitlab
+      ansible.builtin.shell:
+        cmd: cd ~
+        mkdir: shell/

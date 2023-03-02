@@ -1,0 +1,2 @@
+ubuntu
+192.168.61.32 ansible_port=22 ansible_user=osboxes ansible_become_pass=k12r36g5 ansible_ssh_pass=k12r36g5  ansible_become_pass=k12r36g5 ansible_sudo_pass=k12r36g5 
